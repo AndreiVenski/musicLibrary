@@ -1,3 +1,10 @@
 package libraryService
 
-type Music interface{}
+import (
+	"context"
+	"songsLibrary/internal/models"
+)
+
+type Music interface {
+	GetSongDetail(ctx context.Context, songData *models.SongRequest) (*models.SongDetails, error)
+}
