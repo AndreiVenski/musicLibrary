@@ -50,8 +50,83 @@ func (r *libRepo) UpdateSong(ctx context.Context, songData *models.SongFullDataR
 		songData.Text, songData.Link,
 		songData.Group, songData.Song,
 	).StructScan(songResp); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("song not found")
+		}
 		return nil, errors.Wrap(err, "libRepo.UpdateSong.StructScan")
 	}
 
 	return songResp, nil
+}
+
+func (r *libRepo) UpdateSongByID(ctx context.Context, songData *models.SongFullDataRequestWithID) (*models.SongResponse, error) {
+	songResp := &models.SongResponse{}
+	if err := r.db.QueryRowxContext(ctx, updateSongByIDQuery, songData.Group, songData.Song,
+		songData.ReleaseDate, songData.Text, songData.Link, songData.ID).StructScan(songResp); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("song not found")
+		}
+		return nil, errors.New("libRepo.UpdateSongByID.StructScan")
+	}
+	return songResp, nil
+}
+
+func (r *libRepo) DeleteSong(ctx context.Context, songData *models.SongRequest) (bool, error) {
+	result, err := r.db.ExecContext(ctx, deleteSongQuery, songData.Group, songData.Song)
+	if err != nil {
+		return false, errors.Wrap(err, "libRepo.DeleteSong.ExecContext")
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, errors.Wrap(err, "libRepo.DeleteSong.ExecContext")
+	}
+
+	if rowsAffected == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (r *libRepo) DeleteSongByID(ctx context.Context, songID int) (bool, error) {
+	result, err := r.db.ExecContext(ctx, deleteSongByIDQuery, songID)
+	if err != nil {
+		return false, errors.Wrap(err, "libRepo.DeleteSongByID.ExecContext")
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, errors.Wrap(err, "libRepo.DeleteSongByID.ExecContext")
+	}
+
+	if rowsAffected == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (r *libRepo) GetLibraryInfo(ctx context.Context, songData *models.SongFullDataWithLimitAndOffsetRequest) ([]*models.SongResponse, error) {
+	var songsResp []*models.SongResponse
+
+	err := r.db.SelectContext(ctx, &songsResp, getLibraryInfoQuery, songData.Group, songData.Song,
+		songData.ReleaseDate, songData.Text, songData.Link, songData.Limit, songData.Offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "libRepo.GetLibraryInfo.SelectContext")
+	}
+
+	return songsResp, nil
+}
+
+func (r *libRepo) GetSongVerse(ctx context.Context, verseData *models.VerseRequest) (*models.VerseResponse, error) {
+	verse := &models.VerseResponse{}
+	if err := r.db.GetContext(ctx, verse, getSongVerseQuery, verseData.Group, verseData.Song, verseData.VerseID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("song or verse not found")
+		}
+		return nil, errors.Wrap(err, "libRepo.GetSongVerse.Get")
+	}
+
+	return verse, nil
 }

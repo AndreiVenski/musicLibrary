@@ -9,6 +9,7 @@ type Config struct {
 	Server       ServerConfig
 	Postgres     PostgresConfig
 	MusicService MusicServiceConfig
+	HttpClient   HTTPClientConfig
 }
 
 type ServerConfig struct {
@@ -28,6 +29,9 @@ type PostgresConfig struct {
 
 type MusicServiceConfig struct {
 	MusicAPIURL string `envconfig:"MUSICSERVICE_APIURL"`
+}
+
+type HTTPClientConfig struct {
 }
 
 func InitConfig(path string) (*Config, error) {

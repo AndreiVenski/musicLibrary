@@ -7,5 +7,7 @@ type Handler interface {
 	GetMusicTextInfo(ctx *fiber.Ctx) error
 	DeleteMusic(ctx *fiber.Ctx) error
 	UpdateMusicInfo(ctx *fiber.Ctx) error
+	DeleteMusicByID(ctx *fiber.Ctx) error
+	UpdateMusicInfoByID(ctx *fiber.Ctx) error
 	AddNewMusic(ctx *fiber.Ctx) error
 }

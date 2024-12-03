@@ -1,14 +1,14 @@
 package server
 
 import (
-	"basicProjectLayout/config"
-	"basicProjectLayout/pkg/logger"
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 	"net"
 	"os"
 	"os/signal"
+	"songsLibrary/config"
+	"songsLibrary/pkg/logger"
 	"syscall"
 	"time"
 )
