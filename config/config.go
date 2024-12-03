@@ -6,9 +6,9 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig
-	Postgres PostgresConfig
-	Kafka    KafkaConfig
+	Server       ServerConfig
+	Postgres     PostgresConfig
+	MusicService MusicServiceConfig
 }
 
 type ServerConfig struct {
@@ -26,12 +26,8 @@ type PostgresConfig struct {
 	PostgresqlDbname   string `envconfig:"POSTGRESQL_DBNAME"`
 }
 
-type KafkaConfig struct {
-	SendMessageTimeout int    `envconfig:"KAFKA_SENDMESSAGETIMEOUT"`
-	UserTopic          string `envconfig:"KAFKA_USERTOPIC"`
-	Port               string `envconfig:"KAFKA_PORT"`
-	Host               string `envconfig:"KAFKA_HOST"`
-	PingTopic          string `envconfig:"Kafka_PINGTOPIC"`
+type MusicServiceConfig struct {
+	MusicAPIURL string `envconfig:"MUSICSERVICE_APIURL"`
 }
 
 func InitConfig(path string) (*Config, error) {
