@@ -9,16 +9,16 @@ RUN go mod download
 
 COPY . ./
 
-RUN go build -o authservice ./cmd/main.go
+RUN go build -o libservice ./cmd/main.go
 
 FROM alpine:3.18
 
 WORKDIR /app
 
-COPY --from=build /app/authservice /app/authservice
+COPY --from=build /app/libservice /app/libservice
 COPY --from=build /app/migrations /app/migrations
 COPY .env /app/.env
 
 EXPOSE 8080
 
-CMD ["./authservice"]
+CMD ["./libservice"]

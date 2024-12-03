@@ -3,50 +3,44 @@ package repository
 const (
 	isExistsMusicQuery = `SELECT EXISTS (SELECT 1 FROM songs WHERE "group"=$1 AND song=$2)`
 
-	writeSongQuery = `INSERT INTO songs (group, song, releaseDate, text, link) 
+	writeSongQuery = `INSERT INTO songs (group, song, release_date, text, link) 
 						  VALUES ($1, $2, $3, $4, $5) RETURNING *`
 
 	updateSongQuery = `UPDATE songs 
-						  SET releaseDate = COALESCE($1, releaseDate), 
+						  SET release_date = COALESCE($1, release_date), 
 						      text = COALESCE($2, text),
 						      link = COALESCE($3, link)
 						  WHERE "group" = $4 AND song = $5 
-						  RETUTNING *
+						  RETURNING *
                 		 `
 
 	updateSongByIDQuery = `UPDATE songs 
-						  SET group = COALESCE($1, "group")
+						  SET "group" = COALESCE($1, "group")
 						  	  song = COALESCE($2, song)
-						      releaseDate = COALESCE($3, releaseDate), 
+						      release_date = COALESCE($3, release_date), 
 						      text = COALESCE($4, text),
 						      link = COALESCE($5, link)
-						  WHERE songId=$6
-						  RETUTNING *
+						  WHERE songid=$6
+						  RETURNING *
                 		 `
 
-	deleteSongQuery = `DELETE FROM songs WHERE group=$1 AND song=$2`
+	deleteSongQuery = `DELETE FROM songs WHERE "group"=$1 AND song=$2`
 
-	deleteSongByIDQuery = `DELETE FROM songs WHERE songId=$1`
+	deleteSongByIDQuery = `DELETE FROM songs WHERE songid=$1`
 
-	getLibraryInfoQuery = `SELECT songId, "group", song, releaseDate, text, link
+	getLibraryInfoQuery = `SELECT songid, "group", song, release_date, text, link
 							FROM songs
-							WHERE "group" ILIKE COALESCE('%' || $1 || '$%', '%') AND 
-							      song ILIKE COALESCE('%' || $2 || '$%', '%') AND
-								  releaseDate ILIKE COALESCE('%' || $3 || '$%', '%') AND
-								  text ILIKE COALESCE('%' || $4 || '$%', '%') AND
-								  link ILIKE COALESCE('%' || $5 || '$%', '%') AND
-							ORDER BY id
+							WHERE "group" ILIKE COALESCE('%' || $1 || '%', '%') AND 
+							      song ILIKE COALESCE('%' || $2 || '%', '%') AND
+								  release_date ILIKE COALESCE('%' || $3 || '%', '%') AND
+								  text ILIKE COALESCE('%' || $4 || '%', '%') AND
+								  link ILIKE COALESCE('%' || $5 || '%', '%')
+							ORDER BY songid
 							LIMIT $6 OFFSET $7
 					`
 
-	getSongVerseQuery = `WITH split_lyrics AS (
-						  SELECT 
-							  UNNEST(string_to_array(text, '\n\n')) WITH ORDINALITY AS (verse, verse_number)
-						  FROM songs
-						  WHERE "group" = $1 AND song = $2
-					       )
-							SELECT verse
-							FROM split_lyrics
-							WHERE verse_number = $3
+	getSongVerseQuery = `SELECT split_part(text, E'\n\n', $1) AS verse, $1 AS verse_id
+						FROM songs
+						WHERE "group" = $2 AND song = $3;
 						`
 )

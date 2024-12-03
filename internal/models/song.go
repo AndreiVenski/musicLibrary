@@ -9,7 +9,7 @@ type SongField struct {
 }
 
 type ReleaseDateField struct {
-	ReleaseDate string `json:"releaseDate" db:"releaseDate"`
+	ReleaseDate string `json:"releaseDate" db:"release_date"`
 }
 
 type TextField struct {
@@ -58,10 +58,18 @@ type SongFullDataRequestWithID struct {
 }
 
 type SongResponse struct {
-	ID               int `json:"songId" db:"songId"`
+	ID               int `json:"songId" db:"songid"`
 	GroupField       `validate:"required"`
 	SongField        `validate:"required"`
 	ReleaseDateField `validate:"required"`
 	TextField        `validate:"required"`
 	LinkField        `validate:"required"`
+}
+
+type SongsResponse struct {
+	Songs []*SongsResponse
+}
+
+type SongID struct {
+	ID int `json:"songId"`
 }

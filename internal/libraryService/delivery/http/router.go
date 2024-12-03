@@ -6,8 +6,8 @@ import (
 )
 
 func MapLibRoutes(api fiber.Router, handlers libraryService.Handler) {
-	api.Get("/info", handlers.GetLibraryInfo)
-	api.Get("/music/text", handlers.GetMusicTextInfo)
+	api.Post("/info", handlers.GetLibraryInfo)
+	api.Post("/music/text", handlers.GetMusicTextInfo)
 	api.Post("/music", handlers.AddNewMusic)
 	api.Put("/music/update", handlers.UpdateMusicInfo)
 	api.Put("/music/update/id", handlers.UpdateMusicInfoByID)

@@ -10,6 +10,7 @@ import (
 	"songsLibrary/config"
 	"songsLibrary/internal/libraryService"
 	"songsLibrary/internal/models"
+	"songsLibrary/pkg/httpErrors"
 	"songsLibrary/pkg/utils"
 )
 
@@ -46,11 +47,11 @@ func (m *libMusic) GetSongDetail(ctx context.Context, songData *models.SongReque
 	switch resp.StatusCode {
 	case 200:
 	case 400:
-		return nil, errors.New("incorrect request")
+		return nil, httpErrors.IncorrectRequestToAPIError
 	case 500:
-		return nil, errors.New("API server doesn't work")
+		return nil, httpErrors.APINotWorkError
 	default:
-		return nil, errors.New("unknown response status code")
+		return nil, httpErrors.UnkownStatusCodeFromAPIError
 	}
 
 	body, err := io.ReadAll(resp.Body)

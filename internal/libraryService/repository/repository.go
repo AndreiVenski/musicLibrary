@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"songsLibrary/internal/libraryService"
 	"songsLibrary/internal/models"
+	"songsLibrary/pkg/httpErrors"
 )
 
 type libRepo struct {
@@ -51,7 +52,7 @@ func (r *libRepo) UpdateSong(ctx context.Context, songData *models.SongFullDataR
 		songData.Group, songData.Song,
 	).StructScan(songResp); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("song not found")
+			return nil, httpErrors.NotFoundSongError
 		}
 		return nil, errors.Wrap(err, "libRepo.UpdateSong.StructScan")
 	}
@@ -64,7 +65,7 @@ func (r *libRepo) UpdateSongByID(ctx context.Context, songData *models.SongFullD
 	if err := r.db.QueryRowxContext(ctx, updateSongByIDQuery, songData.Group, songData.Song,
 		songData.ReleaseDate, songData.Text, songData.Link, songData.ID).StructScan(songResp); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("song not found")
+			return nil, httpErrors.NotFoundSongError
 		}
 		return nil, errors.New("libRepo.UpdateSongByID.StructScan")
 	}
@@ -97,6 +98,7 @@ func (r *libRepo) DeleteSongByID(ctx context.Context, songID int) (bool, error) 
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
+
 		return false, errors.Wrap(err, "libRepo.DeleteSongByID.ExecContext")
 	}
 
@@ -121,9 +123,12 @@ func (r *libRepo) GetLibraryInfo(ctx context.Context, songData *models.SongFullD
 
 func (r *libRepo) GetSongVerse(ctx context.Context, verseData *models.VerseRequest) (*models.VerseResponse, error) {
 	verse := &models.VerseResponse{}
-	if err := r.db.GetContext(ctx, verse, getSongVerseQuery, verseData.Group, verseData.Song, verseData.VerseID); err != nil {
+	if verseData.VerseID == 0 {
+		verseData.VerseID = 1
+	}
+	if err := r.db.GetContext(ctx, verse, getSongVerseQuery, verseData.VerseID, verseData.Group, verseData.Song); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("song or verse not found")
+			return nil, httpErrors.NotFoundSongOrVerseError
 		}
 		return nil, errors.Wrap(err, "libRepo.GetSongVerse.Get")
 	}

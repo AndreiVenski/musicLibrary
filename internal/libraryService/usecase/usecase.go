@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"songsLibrary/config"
 	"songsLibrary/internal/libraryService"
 	"songsLibrary/internal/models"
+	"songsLibrary/pkg/httpErrors"
 	logger1 "songsLibrary/pkg/logger"
 )
 
@@ -31,7 +31,7 @@ func (uc *libUC) AddSong(ctx context.Context, songData *models.SongRequest) (*mo
 		return nil, err
 	}
 	if exists {
-		return nil, errors.New("song exists in database")
+		return nil, httpErrors.ExistedSongError
 	}
 
 	songDetails, err := uc.libMusic.GetSongDetail(ctx, songData)
@@ -71,7 +71,7 @@ func (uc *libUC) DeleteSong(ctx context.Context, songData *models.SongRequest) e
 	}
 
 	if !deleted {
-		return errors.New("song not found")
+		return httpErrors.NotFoundSongError
 	}
 
 	return nil
@@ -84,7 +84,7 @@ func (uc *libUC) DeleteSongByID(ctx context.Context, songID int) error {
 	}
 
 	if !deleted {
-		return errors.New("song not found")
+		return httpErrors.NotFoundSongError
 	}
 
 	return nil

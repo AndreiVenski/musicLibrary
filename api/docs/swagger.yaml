@@ -1,0 +1,334 @@
+basePath: /lib
+definitions:
+  models.SongFullDataRequest:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      releaseDate:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+  models.SongFullDataRequestWithID:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      releaseDate:
+        type: string
+      song:
+        type: string
+      songId:
+        type: integer
+      text:
+        type: string
+    required:
+    - songId
+    type: object
+  models.SongFullDataWithLimitAndOffsetRequest:
+    properties:
+      group:
+        type: string
+      limit:
+        type: integer
+      link:
+        type: string
+      offset:
+        type: integer
+      releaseDate:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+  models.SongID:
+    properties:
+      songId:
+        type: integer
+    type: object
+  models.SongRequest:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+    type: object
+  models.SongResponse:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      releaseDate:
+        type: string
+      song:
+        type: string
+      songId:
+        type: integer
+      text:
+        type: string
+    type: object
+  models.SongsResponse:
+    properties:
+      songs:
+        items:
+          $ref: '#/definitions/models.SongsResponse'
+        type: array
+    type: object
+  models.VerseRequest:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+      verseID:
+        type: integer
+    type: object
+  models.VerseResponse:
+    properties:
+      verse:
+        type: string
+      verseID:
+        type: integer
+    type: object
+info:
+  contact:
+    email: venskiandrei32@gmail.com
+    name: Andrei Venski
+    url: https://github.com/andrew967
+  description: This is API for song library
+  title: Song library API
+  version: "1.0"
+paths:
+  /info:
+    post:
+      consumes:
+      - application/json
+      description: Retrieve information about the music library with optional pagination.
+      parameters:
+      - description: Filter parameters
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongFullDataWithLimitAndOffsetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of songs
+          schema:
+            $ref: '#/definitions/models.SongsResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get library information
+      tags:
+      - Library
+  /music:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a song from the library using song details.
+      parameters:
+      - description: Song to delete
+        in: body
+        name: songData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Song deleted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a song
+      tags:
+      - Library
+    post:
+      consumes:
+      - application/json
+      description: Add a new song to the music library.
+      parameters:
+      - description: Song data to add
+        in: body
+        name: songData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Added song information
+          schema:
+            $ref: '#/definitions/models.SongResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add a new song
+      tags:
+      - Library
+  /music/id:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a song from the library using its unique ID.
+      parameters:
+      - description: Song ID to delete
+        in: body
+        name: songID
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongID'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Song deleted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a song by ID
+      tags:
+      - Library
+  /music/text:
+    post:
+      consumes:
+      - application/json
+      description: Retrieve verse information for a specific song.
+      parameters:
+      - description: Verse request
+        in: body
+        name: verseReq
+        required: true
+        schema:
+          $ref: '#/definitions/models.VerseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Verse information
+          schema:
+            $ref: '#/definitions/models.VerseResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get music text information
+      tags:
+      - Library
+  /music/update:
+    put:
+      consumes:
+      - application/json
+      description: Update details of a song in the library.
+      parameters:
+      - description: Song data to update
+        in: body
+        name: updateData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongFullDataRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated song information
+          schema:
+            $ref: '#/definitions/models.SongResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update music information
+      tags:
+      - Library
+  /music/update/id:
+    put:
+      consumes:
+      - application/json
+      description: Update details of a song in the library using its unique ID.
+      parameters:
+      - description: Song data to update
+        in: body
+        name: updateData
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongFullDataRequestWithID'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated song information
+          schema:
+            $ref: '#/definitions/models.SongResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update music information by ID
+      tags:
+      - Library
+swagger: "2.0"

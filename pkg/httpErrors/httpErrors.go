@@ -14,13 +14,14 @@ var (
 func IsServiceError(err error) bool {
 	switch {
 	case errors.Is(err, NotFoundSongError),
-		errors.Is(err, NotFoundSongError),
+		errors.Is(err, NotFoundSongOrVerseError),
 		errors.Is(err, ExistedSongError),
 		errors.Is(err, IncorrectRequestToAPIError),
 		errors.Is(err, APINotWorkError),
 		errors.Is(err, UnkownStatusCodeFromAPIError):
 		return false
+
 	default:
-		return false
+		return true
 	}
 }

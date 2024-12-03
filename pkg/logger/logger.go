@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"basicProjectLayout/config"
 	"go.uber.org/zap"
+	"songsLibrary/config"
 )
 
 type Logger interface {
@@ -13,6 +13,10 @@ type Logger interface {
 	Errorf(template string, args ...interface{})
 	Fatal(args ...interface{})
 	Fatalf(template string, args ...interface{})
+	Warn(args ...interface{})
+	Warnf(template string, args ...interface{})
+	Debug(args ...interface{})
+	Debugf(template string, args ...interface{})
 }
 
 type ApiLogger struct {
@@ -29,6 +33,19 @@ func NewApiLogger(cfg *config.Config) *ApiLogger {
 func (l *ApiLogger) InitLogger() {
 	configL := zap.NewProductionConfig()
 	configL.OutputPaths = []string{"app.log", "stdout"}
+
+	switch l.cfg.Logger.LogLevel {
+	case "debug":
+		configL.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
+	case "info":
+		configL.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
+	case "warn":
+		configL.Level = zap.NewAtomicLevelAt(zap.WarnLevel)
+	case "error":
+		configL.Level = zap.NewAtomicLevelAt(zap.ErrorLevel)
+	default:
+		configL.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
+	}
 
 	logger, err := configL.Build()
 	if err != nil {
@@ -61,4 +78,19 @@ func (l *ApiLogger) Fatal(args ...interface{}) {
 
 func (l *ApiLogger) Fatalf(template string, args ...interface{}) {
 	l.suggarLogger.Fatalf(template, args...)
+}
+
+func (l *ApiLogger) Warn(args ...interface{}) {
+	l.suggarLogger.Warn(args...)
+}
+func (l *ApiLogger) Warnf(template string, args ...interface{}) {
+	l.suggarLogger.Warnf(template, args...)
+}
+
+func (l *ApiLogger) Debug(args ...interface{}) {
+	l.suggarLogger.Debug(args...)
+}
+
+func (l *ApiLogger) Debugf(template string, args ...interface{}) {
+	l.suggarLogger.Debugf(template, args...)
 }

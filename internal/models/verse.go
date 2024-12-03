@@ -6,6 +6,6 @@ type VerseRequest struct {
 	VerseID int    `json:"verseID" db:"verseID"`
 }
 type VerseResponse struct {
-	VerseID int    `json:"verseID" db:""`
-	Verse   string `json:"verse" db:""`
+	Verse   string `json:"verse" db:"verse"`
+	VerseID int    `json:"verseID" db:"verse_id"`
 }

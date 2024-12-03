@@ -1,9 +1,10 @@
 package pg_conn
 
 import (
-	"basicProjectLayout/config"
 	"fmt"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
+	"songsLibrary/config"
 )
 
 func NewPsqlDB(cfg *config.Config) (*sqlx.DB, error) {
